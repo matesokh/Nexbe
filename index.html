@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEXBE — Towers Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="ambient-glow"></div>
+  <div class="video-background" aria-hidden="true">
+    <iframe
+      src="https://www.tiktok.com/player/v1/7012458028582571270?autoplay=1&loop=1&muted=1&controls=0&description=0&music_info=0"
+      title="Animated laser background"
+      allow="autoplay; encrypted-media"
+      tabindex="-1"></iframe>
+  </div>
+
+  <div class="modal-overlay" id="rgModal">
+    <div class="modal-box">
+      <h2>Before you play</h2>
+      <p>Nexbe is a game of chance. Every floor is an independent random draw, and the odds are built with a house edge — over time, the math favors the house, not the player.</p>
+      <ul>
+        <li>Past wins or losses don't change the odds of the next tile.</li>
+        <li>Cashing out locks in a payout; climbing further always risks losing it all.</li>
+        <li>Only wager amounts you're comfortable losing entirely.</li>
+      </ul>
+      <button id="rgAcknowledge">Got it, let's play</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay hidden" id="roundModal">
+    <div class="modal-box">
+      <h2 id="roundModalTitle">Round result</h2>
+      <p id="roundModalBody"></p>
+      <div class="session-summary" id="roundModalSession"></div>
+      <button id="roundModalClose">Close</button>
+    </div>
+  </div>
+
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark"><span>IX</span></div>
+        NEXBE
+      </div>
+      <div class="balance">
+        <span class="label">Balance</span>
+        <span class="value" id="balanceValue">$1,000.00</span>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="tower-wrap">
+        <div class="tower" id="tower"></div>
+      </section>
+
+      <aside class="panel">
+        <div class="panel-block bet-control">
+          <label for="betInput">Bet amount</label>
+          <div class="bet-input-wrap">
+            <input id="betInput" type="text" inputmode="decimal" autocomplete="off" value="10" />
+            <div class="bet-steppers">
+              <button id="betStepUp" type="button" aria-label="Increase bet">▲</button>
+              <button id="betStepDown" type="button" aria-label="Decrease bet">▼</button>
+            </div>
+          </div>
+          <div class="bet-quick" id="betQuick">
+            <button data-frac="0.25" type="button" aria-label="Bet 25 percent of balance">¼</button>
+            <button data-frac="0.5" type="button" aria-label="Bet 50 percent of balance">½</button>
+            <button data-frac="max" type="button" aria-label="Bet full balance">Max</button>
+          </div>
+        </div>
+
+        <div class="panel-block">
+          <label>Difficulty</label>
+          <div class="diff-toggle" id="diffToggle">
+            <button data-diff="easy" class="active">Easy</button>
+            <button data-diff="medium">Medium</button>
+            <button data-diff="hard">Hard</button>
+          </div>
+        </div>
+
+        <div class="stat-row">
+          <div>
+            <span class="stat-label">Floor</span>
+            <span class="stat-value" id="floorValue">0 / 8</span>
+          </div>
+          <div>
+            <span class="stat-label">Multiplier</span>
+            <span class="stat-value" id="multValue">1.00×</span>
+          </div>
+        </div>
+
+        <div class="payout">
+          <span class="label">Potential payout</span>
+          <span class="value" id="payoutValue">$0.00</span>
+        </div>
+
+        <button id="primaryBtn" class="btn-primary">Place bet &amp; climb</button>
+        <button id="cashoutBtn" class="btn-cashout" disabled>Cash out</button>
+
+        <p class="hint" id="hintText">Pick a bet and start climbing. One wrong tile and the floor gives way.</p>
+
+        <div class="panel-block" style="border-top:1px solid var(--line);padding-top:14px;">
+          <label>Session</label>
+          <div class="stat-row" style="border:none;padding:0;">
+            <div>
+              <span class="stat-label">Rounds</span>
+              <span class="stat-value" id="sessionRounds">0</span>
+            </div>
+            <div>
+              <span class="stat-label">Net</span>
+              <span class="stat-value" id="sessionNet">$0.00</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <p class="footnote">
+      <span class="rg-line">Game of chance · house edge applies · only wager what you can afford to lose</span>
+      Demo only — balance and outcomes are simulated client-side.<br/>
+      In production this RNG moves server-side (Firebase Cloud Function) so no client ever sees tile outcomes before they're picked.
+    </p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
