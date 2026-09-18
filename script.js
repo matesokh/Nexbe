@@ -1,385 +1,232 @@
-(function(){
-  const FLOORS = 8;
-  const DIFFICULTIES = {
-    easy:   { tiles: 4, bombs: 1, label: "Easy" },
-    medium: { tiles: 3, bombs: 1, label: "Medium" },
-    hard:   { tiles: 2, bombs: 1, label: "Hard" }
-  };
-  const HOUSE_EDGE = 0.98;
+(() => {
+  'use strict';
 
-  let state = {
+  const FLOORS = 8;
+  const HOUSE_EDGE = 0.98;
+  const DIFFICULTIES = {
+    easy: { tiles: 4, bombs: 1 },
+    medium: { tiles: 3, bombs: 1 },
+    hard: { tiles: 2, bombs: 1 }
+  };
+
+  const state = {
     balance: 1000,
     bet: 10,
-    difficulty: "easy",
+    difficulty: 'easy',
     active: false,
+    busy: false,
     currentFloor: 0,
-    bombIndex: [],
-    floorMultiplier: 1,
-    cumulativeMult: 1
+    multiplier: 1,
+    bombs: []
   };
+  const session = { rounds: 0, wins: 0, losses: 0, wagered: 0, returned: 0, history: [] };
+  const $ = id => document.getElementById(id);
+  const money = value => '$' + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const factor = () => { const d = DIFFICULTIES[state.difficulty]; return (d.tiles / (d.tiles - d.bombs)) * HOUSE_EDGE; };
+  const el = { balance: $('balanceValue'), mini: $('miniBalance'), tower: $('tower'), bet: $('betInput'), floor: $('floorValue'), readout: $('floorReadout'), mult: $('multValue'), payout: $('livePayout'), liveBet: $('liveBet'), cash: $('cashoutBtn'), cashVal: $('cashoutValue'), cashMult: $('cashoutMult'), primary: $('primaryBtn'), hint: $('hintText'), status: $('roundStatus'), diff: $('diffToggle'), odds: $('oddsLabel'), history: $('history'), count: $('historyCount'), rounds: $('sessionRounds'), wins: $('sessionWins'), losses: $('sessionLosses'), net: $('sessionNet'), modal: $('resultModal') };
 
-  let session = {
-    rounds: 0,
-    wins: 0,
-    losses: 0,
-    wagered: 0,
-    returned: 0
-  };
-
-  const el = {
-    balance: document.getElementById('balanceValue'),
-    tower: document.getElementById('tower'),
-    floorValue: document.getElementById('floorValue'),
-    multValue: document.getElementById('multValue'),
-    payoutValue: document.getElementById('payoutValue'),
-    primaryBtn: document.getElementById('primaryBtn'),
-    cashoutBtn: document.getElementById('cashoutBtn'),
-    hintText: document.getElementById('hintText'),
-    betInput: document.getElementById('betInput'),
-    diffToggle: document.getElementById('diffToggle'),
-    betQuick: document.getElementById('betQuick'),
-    betStepUp: document.getElementById('betStepUp'),
-    betStepDown: document.getElementById('betStepDown')
-  };
-
-  function fmt(n){
-    return "$" + n.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
-  }
-
-  function floorFactor(){
-    const d = DIFFICULTIES[state.difficulty];
-    return (d.tiles / (d.tiles - d.bombs)) * HOUSE_EDGE;
-  }
-
-  function svgGem(){
-    return '<svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 2 L20 9 L12 22 L4 9 Z" fill="#E8C46B" stroke="#C9A227" stroke-width="1"/></svg>';
-  }
-  function svgMine(){
-    return '<svg viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="5.5" fill="#C24A32"/><g stroke="#C24A32" stroke-width="2" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.9" y1="4.9" x2="7.5" y2="7.5"/><line x1="16.5" y1="16.5" x2="19.1" y2="19.1"/><line x1="19.1" y1="4.9" x2="16.5" y2="7.5"/><line x1="7.5" y1="16.5" x2="4.9" y2="19.1"/></g></svg>';
-  }
-
-  function buildTower(){
-    el.tower.innerHTML = "";
-    const d = DIFFICULTIES[state.difficulty];
-    let cumulative = 1;
-    const mults = [];
-    for(let f=1; f<=FLOORS; f++){
-      cumulative *= floorFactor();
-      mults.push(cumulative);
-    }
-
-    for(let f=1; f<=FLOORS; f++){
-      const floorDiv = document.createElement('div');
-      floorDiv.className = 'floor locked';
-      floorDiv.dataset.floor = f;
-
+  function buildTower() {
+    const difficulty = DIFFICULTIES[state.difficulty];
+    $('betQuick').querySelector('[data-action="double"]').textContent = '2x';
+    let multiplier = 1;
+    el.tower.innerHTML = '';
+    el.tower.style.flexDirection = 'column-reverse';
+    for (let floor = 1; floor <= FLOORS; floor += 1) {
+      multiplier *= factor();
+      const row = document.createElement('div');
+      row.className = 'floor locked';
+      row.dataset.floor = floor;
       const badge = document.createElement('div');
       badge.className = 'floor-badge';
-      badge.textContent = String(f).padStart(2,'0');
-
-      const tilesWrap = document.createElement('div');
-      tilesWrap.className = 'tiles';
-      tilesWrap.style.gridTemplateColumns = `repeat(${d.tiles}, 1fr)`;
-
-      for(let t=0; t<d.tiles; t++){
-        const tileBtn = document.createElement('button');
-        tileBtn.className = 'tile';
-        tileBtn.dataset.floor = f;
-        tileBtn.dataset.index = t;
-        tileBtn.innerHTML = `
-          <div class="tile-inner">
-            <div class="tile-face back"></div>
-            <div class="tile-face front"></div>
-          </div>`;
-        tileBtn.addEventListener('click', onTileClick);
-        tilesWrap.appendChild(tileBtn);
+      badge.textContent = String(floor).padStart(2, '0');
+      const tiles = document.createElement('div');
+      tiles.className = 'tiles';
+      tiles.style.gridTemplateColumns = `repeat(${difficulty.tiles}, 1fr)`;
+      for (let index = 0; index < difficulty.tiles; index += 1) {
+        const tile = document.createElement('button');
+        tile.className = 'tile';
+        tile.type = 'button';
+        tile.dataset.floor = floor;
+        tile.dataset.index = index;
+        tile.setAttribute('aria-label', `Floor ${floor}, tile ${index + 1}`);
+        tiles.appendChild(tile);
       }
-
-      const multDiv = document.createElement('div');
-      multDiv.className = 'floor-mult';
-      multDiv.textContent = mults[f-1].toFixed(2) + '×';
-
-      floorDiv.appendChild(badge);
-      floorDiv.appendChild(tilesWrap);
-      floorDiv.appendChild(multDiv);
-      el.tower.appendChild(floorDiv);
+      const multiplierLabel = document.createElement('div');
+      multiplierLabel.className = 'floor-mult';
+      multiplierLabel.textContent = multiplier.toFixed(2) + '×';
+      row.append(badge, tiles, multiplierLabel);
+      el.tower.appendChild(row);
     }
-    refreshFloorStates();
+    refreshFloors();
   }
 
-  function refreshFloorStates(){
-    const rows = el.tower.querySelectorAll('.floor');
-    rows.forEach(row=>{
-      const f = parseInt(row.dataset.floor,10);
-      row.classList.remove('locked','current','cleared','exploded');
-      if(!state.active){
-        row.classList.add('locked');
-        return;
-      }
-      if(f < state.currentFloor + 1) row.classList.add('cleared');
-      else if(f === state.currentFloor + 1) row.classList.add('current');
-      else row.classList.add('locked');
+  function refreshFloors() {
+    el.tower.querySelectorAll('.floor').forEach(row => {
+      const floor = Number(row.dataset.floor);
+      const status = !state.active ? 'locked' : floor <= state.currentFloor ? 'cleared' : floor === state.currentFloor + 1 ? 'current' : 'locked';
+      row.className = `floor ${status}`;
     });
   }
 
-  function pulseValue(elem){
-    elem.classList.remove('value-pulse');
-    void elem.offsetWidth;
-    elem.classList.add('value-pulse');
+  function update() {
+    const payout = state.currentFloor ? state.bet * state.multiplier : 0;
+    el.balance.textContent = money(state.balance);
+    el.mini.textContent = money(state.balance) + ' available';
+    el.liveBet.textContent = money(state.bet);
+    el.floor.textContent = `${state.currentFloor} / ${FLOORS}`;
+    el.readout.innerHTML = `${String(Math.min(state.currentFloor + 1, FLOORS)).padStart(2, '0')} <small>/ 08</small>`;
+    el.mult.textContent = state.multiplier.toFixed(2) + '×';
+    el.payout.textContent = money(payout);
+    el.cashVal.textContent = money(payout);
+    el.cashMult.textContent = state.multiplier.toFixed(2) + '×';
+    el.cash.disabled = !state.active || state.currentFloor === 0;
+    el.rounds.textContent = session.rounds;
+    el.wins.textContent = session.wins;
+    el.losses.textContent = session.losses;
+    const net = session.returned - session.wagered;
+    el.net.textContent = (net >= 0 ? '+' : '−') + money(Math.abs(net));
   }
 
-  function updateStats(){
-    const balStr = fmt(state.balance);
-    if(el.balance.textContent !== balStr){
-      el.balance.textContent = balStr;
-      pulseValue(el.balance);
-    }
-    el.floorValue.textContent = `${state.currentFloor} / ${FLOORS}`;
-    el.multValue.textContent = state.cumulativeMult.toFixed(2) + '×';
-    const payout = state.currentFloor > 0 ? state.bet * state.cumulativeMult : 0;
-    const payoutStr = fmt(payout);
-    if(el.payoutValue.textContent !== payoutStr){
-      el.payoutValue.textContent = payoutStr;
-      if(payout > 0) pulseValue(el.payoutValue);
-    }
-    el.cashoutBtn.disabled = !(state.active && state.currentFloor > 0);
+  function setHint(text, type = '') { el.hint.textContent = text; el.hint.className = `hint ${type}`; }
+  function setLocked(locked) {
+    [...el.diff.querySelectorAll('button'), ...document.querySelectorAll('.quick-bets button'), $('betStepUp'), $('betStepDown')].forEach(button => { button.disabled = locked; });
+    el.bet.disabled = locked;
+  }
+  function reveal(row, bomb, hit) {
+    row.querySelectorAll('.tile').forEach(tile => {
+      const index = Number(tile.dataset.index);
+      if (tile.classList.contains('flipped')) return;
+      tile.classList.add('flipped', 'revealed', index === bomb ? 'bomb' : 'safe');
+      if (index === hit) tile.classList.add('hit');
+    });
   }
 
-  function spawnConfetti(){
-    const colors = ['#E8C46B', '#C9A227', '#8fd6bd'];
-    for(let i=0; i<20; i++){
-      const s = document.createElement('div');
-      s.className = 'spark';
-      const angle = Math.random() * Math.PI * 2;
-      const dist = 70 + Math.random() * 130;
-      s.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
-      s.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
-      s.style.background = colors[Math.floor(Math.random() * colors.length)];
-      document.body.appendChild(s);
-      setTimeout(()=> s.remove(), 900);
-    }
-  }
-
-  function setDifficultyLocked(locked){
-    el.diffToggle.querySelectorAll('button').forEach(b=> b.disabled = locked);
-    el.betQuick.querySelectorAll('button').forEach(b=> b.disabled = locked);
-    el.betStepUp.disabled = locked;
-    el.betStepDown.disabled = locked;
-    el.betInput.disabled = locked;
-  }
-
-  function startGame(){
-    const betVal = parseFloat(el.betInput.value);
-    if(isNaN(betVal) || betVal <= 0){
-      el.hintText.textContent = "Enter a valid bet amount first.";
-      el.hintText.className = "hint lose";
-      return;
-    }
-    if(betVal > state.balance){
-      el.hintText.textContent = "That bet is more than your balance.";
-      el.hintText.className = "hint lose";
-      return;
-    }
-
-    state.bet = betVal;
-    state.balance -= betVal;
+  function startRound() {
+    if (state.active || state.busy) return;
+    const bet = Number.parseFloat(el.bet.value);
+    if (!Number.isFinite(bet) || bet <= 0) return setHint('Enter a valid bet amount first.', 'lose');
+    if (bet > state.balance) return setHint('That bet is more than your available balance.', 'lose');
+    state.bet = Math.round(bet * 100) / 100;
+    state.balance -= state.bet;
     state.active = true;
     state.currentFloor = 0;
-    state.cumulativeMult = 1;
-    session.wagered += betVal;
-
-    const d = DIFFICULTIES[state.difficulty];
-    state.bombIndex = [];
-    for(let f=0; f<FLOORS; f++){
-      state.bombIndex.push(Math.floor(Math.random() * d.tiles));
-    }
-
+    state.multiplier = 1;
+    state.bombs = [];
+    session.wagered += state.bet;
+    el.status.textContent = 'LIVE';
+    el.primary.disabled = true;
+    el.primary.querySelector('span').textContent = 'Climbing…';
+    setLocked(true);
     buildTower();
-    el.primaryBtn.disabled = true;
-    el.primaryBtn.textContent = "Climbing…";
-    setDifficultyLocked(true);
-    el.hintText.textContent = "Floor 1: pick a tile to advance.";
-    el.hintText.className = "hint";
-    updateStats();
+    update();
+    setHint('Floor 1 is live. Find a safe tile to climb.');
   }
 
-  function onTileClick(e){
-    if(!state.active) return;
-    const btn = e.currentTarget;
-    const floor = parseInt(btn.dataset.floor,10);
-    const index = parseInt(btn.dataset.index,10);
-    if(floor !== state.currentFloor + 1) return;
-
-    const rowEl = el.tower.querySelector(`.floor[data-floor="${floor}"]`);
-    const tiles = rowEl.querySelectorAll('.tile');
-    const bomb = state.bombIndex[floor-1];
-
-    if(index === bomb){
-      btn.classList.add('bomb','flipped','hit');
-      btn.querySelector('.tile-face.front').innerHTML = svgMine();
-      tiles.forEach(t=>{
-        if(t !== btn) t.removeEventListener('click', onTileClick);
-      });
-      endGame(false, false, floor, index);
+  function chooseTile(event) {
+    if (!state.active || state.busy) return;
+    const tile = event.target.closest('.tile');
+    if (!tile || Number(tile.dataset.floor) !== state.currentFloor + 1) return;
+    state.busy = true;
+    const floor = Number(tile.dataset.floor);
+    const index = Number(tile.dataset.index);
+    const bomb = state.bombs[floor - 1];
+    if (typeof bomb !== 'number') {
+      const difficulty = DIFFICULTIES[state.difficulty];
+      state.bombs[floor - 1] = Math.floor(Math.random() * difficulty.tiles);
+    }
+    const floorBomb = state.bombs[floor - 1];
+    const row = tile.closest('.floor');
+    tile.classList.add('flipped');
+    if (index === floorBomb) {
+      tile.classList.add('bomb', 'hit');
+      row.classList.add('exploded');
+      reveal(row, floorBomb, index);
+      finish(false, floor);
       return;
     }
-
-    btn.classList.add('safe','flipped');
-    btn.querySelector('.tile-face.front').innerHTML = svgGem();
-    tiles.forEach(t => t.removeEventListener('click', onTileClick));
-
+    tile.classList.add('safe');
     state.currentFloor += 1;
-    state.cumulativeMult *= floorFactor();
-    refreshFloorStates();
-    updateStats();
-
-    if(state.currentFloor === FLOORS){
-      endGame(true, true);
-      return;
-    }
-    el.hintText.textContent = `Floor ${state.currentFloor + 1}: pick a tile to advance, or cash out.`;
-    el.hintText.className = "hint";
+    state.multiplier *= factor();
+    refreshFloors();
+    update();
+    if (state.currentFloor === FLOORS) return finish(true, FLOORS, true);
+    setHint(`Floor ${state.currentFloor + 1} is ready. Climb or cash out.`, 'win');
+    state.busy = false;
   }
 
-  function revealFullTower(hitFloor, hitIndex){
-    for(let f=1; f<=FLOORS; f++){
-      const rowEl = el.tower.querySelector(`.floor[data-floor="${f}"]`);
-      rowEl.classList.remove('locked','current','cleared');
-      rowEl.classList.add(f === hitFloor ? 'exploded' : 'revealed-floor');
-
-      const bomb = state.bombIndex[f-1];
-      const tiles = rowEl.querySelectorAll('.tile');
-      tiles.forEach(t=>{
-        t.removeEventListener('click', onTileClick);
-        const idx = parseInt(t.dataset.index,10);
-        if(t.classList.contains('flipped')) return;
-        const isBomb = idx === bomb;
-        t.classList.add('flipped', 'revealed', isBomb ? 'bomb' : 'safe');
-        t.querySelector('.tile-face.front').innerHTML = isBomb ? svgMine() : svgGem();
-      });
-    }
-  }
-
-  function endGame(won, reachedTop, hitFloor, hitIndex){
+  function finish(won, floor, summit = false) {
     state.active = false;
-    let payout = 0;
+    const payout = won ? state.bet * state.multiplier : 0;
+    if (won) { state.balance += payout; session.wins += 1; session.returned += payout; } else session.losses += 1;
     session.rounds += 1;
-    if(won){
-      payout = state.bet * state.cumulativeMult;
-      state.balance += payout;
-      session.wins += 1;
-      session.returned += payout;
-      el.hintText.textContent = reachedTop
-        ? `Summit reached. Cashed out ${fmt(payout)} at ${state.cumulativeMult.toFixed(2)}×. Past outcomes don't predict future ones — every floor is an independent draw.`
-        : `Cashed out ${fmt(payout)} at ${state.cumulativeMult.toFixed(2)}×. Past outcomes don't predict future ones — every floor is an independent draw.`;
-      el.hintText.className = "hint win";
-    } else {
-      session.losses += 1;
-      el.hintText.textContent = `Floor ${state.currentFloor + 1} gave way. Lost ${fmt(state.bet)} — full tower revealed below. The house edge means the odds favor the house over time.`;
-      el.hintText.className = "hint lose";
-    }
-    revealFullTower(hitFloor, hitIndex);
-    updateStats();
-    updateSessionDisplay();
-    showRoundModal(won, payout, reachedTop);
-    el.primaryBtn.disabled = false;
-    el.primaryBtn.textContent = "Place bet & climb";
-    setDifficultyLocked(false);
+    session.history.unshift({ bet: state.bet, multiplier: won ? state.multiplier : 0, payout, result: won ? 'WIN' : 'LOSS' });
+    session.history = session.history.slice(0, 10);
+    el.tower.querySelectorAll('.floor').forEach((row, index) => {
+      const floorNumber = index + 1;
+      if (!won || floorNumber <= state.currentFloor) {
+        if (typeof state.bombs[index] !== 'number') {
+          const difficulty = DIFFICULTIES[state.difficulty];
+          state.bombs[index] = Math.floor(Math.random() * difficulty.tiles);
+        }
+        reveal(row, state.bombs[index], floorNumber === floor ? state.bombs[index] : -1);
+      }
+    });
+    el.primary.disabled = false;
+    el.primary.querySelector('span').textContent = 'New round';
+    el.status.textContent = won ? 'COMPLETE' : 'BUSTED';
+    setLocked(false);
+    state.busy = false;
+    setHint(won ? `You locked ${money(payout)} at ${state.multiplier.toFixed(2)}×.` : `Floor ${floor} was dangerous. The bet is gone.`, won ? 'win' : 'lose');
+    renderHistory();
+    update();
+    showResult(won, payout, summit);
   }
 
-  function updateSessionDisplay(){
-    document.getElementById('sessionRounds').textContent = session.rounds;
-    const net = session.returned - session.wagered;
-    const netEl = document.getElementById('sessionNet');
-    netEl.textContent = (net >= 0 ? '+' : '−') + fmt(Math.abs(net)).replace('$','$');
+  function cashOut() { if (state.active && state.currentFloor && !state.busy) { state.busy = true; finish(true, state.currentFloor); } }
+  function renderHistory() {
+    el.count.textContent = `${session.history.length} / 10`;
+    el.history.innerHTML = session.history.length ? '<div class="history-row"><span>Bet</span><span>Result</span><span>Multiplier</span><span>Payout</span></div>' + session.history.map(item => `<div class="history-row"><strong>${money(item.bet)}</strong><span class="${item.result === 'WIN' ? 'win' : 'loss'}">${item.result}</span><span>${item.multiplier ? item.multiplier.toFixed(2) + '×' : '—'}</span><strong class="${item.result === 'WIN' ? 'win' : 'loss'}">${item.payout ? '+' + money(item.payout) : '−' + money(item.bet)}</strong></div>`).join('') : '<div class="empty-history">Your completed runs will appear here.</div>';
+  }
+  function showResult(won, payout, summit) {
+    $('resultIcon').textContent = won ? '$' : '💣';
+    $('resultKicker').textContent = summit ? 'SUMMIT REACHED' : won ? 'CASHED OUT' : 'ROUND OVER';
+    $('resultTitle').textContent = won ? 'You won' : 'Round lost';
+    $('resultAmount').textContent = won ? '+' + money(payout) : '−' + money(state.bet);
+    $('resultAmount').style.color = won ? 'var(--green)' : 'var(--red)';
+    $('resultBody').textContent = won ? (summit ? 'Perfect run. You reached the summit.' : 'Good read. The payout is locked in.') : 'The next floor was not yours this time.';
+    $('resultDetail').textContent = `${money(state.bet)} bet · ${won ? state.multiplier.toFixed(2) + '× payout' : 'No return'}`;
+    el.modal.classList.remove('hidden');
   }
 
-  function showRoundModal(won, payout, reachedTop){
-    const titleEl = document.getElementById('roundModalTitle');
-    const bodyEl = document.getElementById('roundModalBody');
-    const sessionEl = document.getElementById('roundModalSession');
-
-    if(won){
-      titleEl.textContent = reachedTop ? "Summit reached" : "Cashed out";
-      bodyEl.textContent = `Bet ${fmt(state.bet)} at ${state.cumulativeMult.toFixed(2)}× → returned ${fmt(payout)}.`;
-      spawnConfetti();
-    } else {
-      titleEl.textContent = "Floor gave way";
-      bodyEl.textContent = `Bet ${fmt(state.bet)} on floor ${state.currentFloor + 1} → lost ${fmt(state.bet)}.`;
-    }
-
-    const net = session.returned - session.wagered;
-    sessionEl.innerHTML = `
-      <div><span class="stat-label">Rounds</span><span class="stat-value">${session.rounds}</span></div>
-      <div><span class="stat-label">Win / Loss</span><span class="stat-value">${session.wins} / ${session.losses}</span></div>
-      <div><span class="stat-label">Net</span><span class="stat-value">${net >= 0 ? '+' : '−'}${fmt(Math.abs(net))}</span></div>
-    `;
-
-    document.getElementById('roundModal').classList.remove('hidden');
-  }
-
-  function cashOut(){
-    if(!state.active || state.currentFloor === 0) return;
-    endGame(true, false);
-  }
-
-  el.primaryBtn.addEventListener('click', startGame);
-  el.cashoutBtn.addEventListener('click', cashOut);
-  document.getElementById('rgAcknowledge').addEventListener('click', ()=>{
-    document.getElementById('rgModal').classList.add('hidden');
-    document.body.classList.add('motion-ready');
-  });
-  document.getElementById('roundModalClose').addEventListener('click', ()=>{
-    document.getElementById('roundModal').classList.add('hidden');
-  });
-  el.diffToggle.addEventListener('click', (e)=>{
-    const btn = e.target.closest('button');
-    if(!btn || state.active) return;
-    state.difficulty = btn.dataset.diff;
-    el.diffToggle.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
+  el.tower.addEventListener('click', chooseTile);
+  el.primary.addEventListener('click', startRound);
+  el.cash.addEventListener('click', cashOut);
+  $('playAgain').addEventListener('click', () => { el.modal.classList.add('hidden'); buildTower(); update(); el.primary.focus(); });
+  $('modalClose').addEventListener('click', () => el.modal.classList.add('hidden'));
+  el.modal.addEventListener('click', event => { if (event.target === el.modal) el.modal.classList.add('hidden'); });
+  el.diff.addEventListener('click', event => {
+    const button = event.target.closest('button');
+    if (!button || state.active) return;
+    state.difficulty = button.dataset.diff;
+    el.diff.querySelectorAll('button').forEach(item => item.classList.toggle('active', item === button));
+    const difficulty = DIFFICULTIES[state.difficulty];
+    el.odds.textContent = `${difficulty.tiles - difficulty.bombs} safe · ${difficulty.bombs} danger`;
     buildTower();
-    updateStats();
   });
-
-  el.betQuick.addEventListener('click', (e)=>{
-    const btn = e.target.closest('button');
-    if(!btn || state.active) return;
-    let amount;
-    if(btn.dataset.frac === 'max'){
-      amount = Math.floor(state.balance * 100) / 100;
-    } else {
-      const frac = parseFloat(btn.dataset.frac);
-      amount = Math.floor(state.balance * frac * 100) / 100;
-    }
-    el.betInput.value = amount;
-    el.betQuick.querySelectorAll('button').forEach(b=>b.classList.remove('selected'));
-    btn.classList.add('selected');
-    el.hintText.textContent = `Bet set to ${fmt(amount)}.`;
-    el.hintText.className = 'hint';
+  $('betQuick').addEventListener('click', event => {
+    const button = event.target.closest('button');
+    if (!button || state.active) return;
+    const currentBet = Number.parseFloat(el.bet.value) || state.bet;
+    const value = button.dataset.action === 'max' ? state.balance : button.dataset.action === 'double' ? currentBet * 2 : currentBet / 2;
+    el.bet.value = Math.min(state.balance, Math.max(0.01, value)).toFixed(2);
   });
-
-  el.betStepUp.addEventListener('click', ()=>{
-    if(state.active) return;
-    const current = parseFloat(el.betInput.value) || 0;
-    el.betInput.value = Math.round((current + 1) * 100) / 100;
-  });
-  el.betStepDown.addEventListener('click', ()=>{
-    if(state.active) return;
-    const current = parseFloat(el.betInput.value) || 0;
-    el.betInput.value = Math.max(1, Math.round((current - 1) * 100) / 100);
-  });
-
-  el.betInput.addEventListener('input', ()=>{
-    let cleaned = el.betInput.value.replace(/[^0-9.]/g, '');
-    const firstDot = cleaned.indexOf('.');
-    if(firstDot !== -1){
-      cleaned = cleaned.slice(0, firstDot + 1) + cleaned.slice(firstDot + 1).replace(/\./g, '');
-    }
-    el.betInput.value = cleaned;
-  });
+  $('betStepUp').addEventListener('click', () => { if (!state.active) el.bet.value = (Number(el.bet.value) + 1).toFixed(2); });
+  $('betStepDown').addEventListener('click', () => { if (!state.active) el.bet.value = Math.max(0.01, Number(el.bet.value) - 1).toFixed(2); });
+  el.bet.addEventListener('input', () => { el.bet.value = el.bet.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1'); });
+  $('soundBtn').addEventListener('click', event => { const enabled = event.currentTarget.getAttribute('aria-pressed') !== 'true'; event.currentTarget.setAttribute('aria-pressed', enabled); event.currentTarget.textContent = enabled ? '◉' : '◖'; event.currentTarget.setAttribute('aria-label', enabled ? 'Turn sound off' : 'Turn sound on'); });
+  document.addEventListener('keydown', event => { if (event.key === 'Escape') el.modal.classList.add('hidden'); });
 
   buildTower();
-  updateStats();
-  updateSessionDisplay();
+  update();
+  renderHistory();
 })();
