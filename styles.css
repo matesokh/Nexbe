@@ -31,6 +31,38 @@ body {
     overflow-x: hidden
 }
 
+.loading-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 18px;
+    background: #07090d;
+    color: var(--muted);
+    font: 10px var(--mono);
+    letter-spacing: .18em;
+    transition: opacity .45s ease, visibility .45s ease
+}
+
+.loading-screen.loaded {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none
+}
+
+.loading-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #f1f5f7
+}
+
+.loading-logo .brand-word {
+    font-size: 42px
+}
+
 .ambient {
     position: fixed;
     inset: 0;
@@ -65,37 +97,40 @@ body {
 .brand {
     display: flex;
     align-items: center;
-    gap: 9px;
+    gap: 12px;
     text-decoration: none;
-    color: var(--text);
-    font-size: 18px;
-    font-weight: 800;
-    letter-spacing: .12em
+    color: #171c28
 }
 
-.brand em {
-    font-size: 8px;
-    color: var(--cyan);
-    font-style: normal;
-    letter-spacing: .2em
+.brand-word {
+    font-size: 38px;
+    line-height: .8;
+    font-weight: 800;
+    letter-spacing: -.09em;
+    text-transform: lowercase
 }
 
 .brand-mark {
-    width: 29px;
-    height: 29px;
-    display: grid;
-    place-items: center;
-    border: 1px solid var(--cyan);
-    transform: rotate(45deg);
-    box-shadow: 0 0 18px #43d7ee3b
+    position: relative;
+    width: 43px;
+    height: 40px;
+    display: block
 }
 
 .brand-mark i {
-    width: 10px;
-    height: 10px;
-    background: var(--cyan);
-    transform: rotate(-45deg);
-    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%)
+    position: absolute;
+    inset: 0 17px 0 0;
+    display: block;
+    background: #0958f5;
+    clip-path: polygon(0 0, 44% 0, 100% 53%, 100% 100%, 56% 100%, 0 47%)
+}
+
+.brand-mark b {
+    position: absolute;
+    inset: 0 0 0 17px;
+    display: block;
+    background: #0958f5;
+    clip-path: polygon(0 0, 44% 0, 100% 53%, 100% 100%, 56% 100%, 0 47%)
 }
 
 .main-nav {
@@ -444,6 +479,10 @@ main {
 
 .tile.flipped:before {
     display: none
+}
+
+.tile.flipped {
+    animation: tileFlip .3s ease both
 }
 
 .tile.safe {
@@ -949,6 +988,44 @@ footer {
     padding: 12px;
     border-top: 1px solid var(--line);
     border-bottom: 1px solid var(--line)
+}
+
+.settings-modal h2 {
+    margin-bottom: 26px
+}
+
+.setting-row {
+    display: grid;
+    gap: 12px;
+    color: var(--muted);
+    font-size: 12px;
+    text-align: left;
+    margin-bottom: 24px
+}
+
+.setting-row input {
+    width: 100%;
+    accent-color: var(--cyan)
+}
+
+.secondary-btn {
+    width: 100%;
+    border: 1px solid var(--line);
+    background: var(--surface2);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 12px;
+    font: 500 11px var(--mono);
+    cursor: pointer
+}
+
+.secondary-btn:hover {
+    border-color: var(--cyan)
+}
+
+@keyframes tileFlip {
+    0% { transform: rotateX(90deg); opacity: .45 }
+    100% { transform: rotateX(0); opacity: 1 }
 }
 
 .result-modal .primary-btn {
