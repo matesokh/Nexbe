@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#07090d" />
+  <title>NEXBE — Lift Off</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/styles.css" />
+</head>
+
+<body>
+  <div class="loading-screen" id="loadingScreen" aria-hidden="true"><div class="loading-logo"><span class="brand-mark"><i></i><b></b></span><span class="brand-word">nexbe</span></div><span>CALIBRATING FLIGHT</span></div>
+  <div class="ambient" aria-hidden="true"></div>
+  <div class="app-shell">
+    <header class="topbar"><a class="brand" href="index.html" aria-label="Nexbe home"><span class="brand-mark" aria-hidden="true"><i></i><b></b></span><span class="brand-word">nexbe</span></a>
+      <nav class="main-nav" aria-label="Primary navigation"><a href="index.html#home">Home</a><a class="active" href="games.html">Games</a><a href="index.html#about">About</a><a href="index.html#contact">Contact</a></nav>
+      <div class="top-actions"><div class="wallet"><span class="status-dot"></span><span class="wallet-label">Wallet</span><strong id="balanceValue">$1,000.00</strong></div><button class="icon-btn" id="soundBtn" type="button" aria-label="Turn sound off" aria-pressed="true">◉</button><button class="icon-btn" id="settingsBtn" type="button" aria-label="Open settings">⚙</button><button class="avatar" type="button" aria-label="Open profile">NX</button></div>
+    </header>
+    <main>
+      <section class="hero-line lift-hero"><div><p class="eyebrow"><span class="live-dot"></span> NEXBE ORIGINAL</p><h1>Know when to <span>leave.</span></h1><p class="lede">Watch the multiplier rise. Cash out before the flight disappears.</p></div><div class="live-stats"><div><span>Current bet</span><strong id="liveBet">$10.00</strong></div><div><span>Potential payout</span><strong class="gold" id="livePayout">$0.00</strong></div><div><span>Session P/L</span><strong id="sessionNet">+$0.00</strong></div></div></section>
+      <div class="game-layout lift-layout">
+        <section class="lift-card" aria-label="Lift Off game board"><div class="tower-header"><div><span class="section-kicker">THE FLIGHT</span><h2>Hold your nerve</h2></div><span class="round-id" id="roundStatus">READY</span></div><div class="flight-stage" id="flightStage"><div class="flight-grid-lines"></div><div class="flight-path" id="flightPath"></div><div class="flight-vehicle" id="flightVehicle" aria-label="UFO">🛸</div><div class="flight-value" id="flightValue">1.00×</div><span class="flight-axis axis-zero">0×</span><span class="flight-axis axis-high">8×</span></div><div class="board-footer"><span>Live multiplier <b id="multiplierValue">1.00×</b></span><span class="fair-badge">◈ Independent flight path</span></div><div class="past-peaks"><span class="section-kicker">PAST MAX MULTIPLIERS</span><div class="peak-list" id="peakList"><span class="peak-empty">Completed flights will appear here.</span></div></div></section>
+        <aside class="control-panel"><div class="panel-heading"><div><span class="section-kicker">YOUR RUN</span><h2>Set your launch</h2></div><span class="round-id" id="panelStatus">READY</span></div><div class="control-block bet-block"><div class="control-label"><label for="betInput">Bet amount</label><span class="balance-mini" id="miniBalance">$1,000.00 available</span></div><div class="amount-field"><span>$</span><input id="betInput" type="text" inputmode="decimal" value="10.00" aria-label="Bet amount" /><div class="stepper"><button id="betStepUp" type="button" aria-label="Increase bet">+</button><button id="betStepDown" type="button" aria-label="Decrease bet">−</button></div></div><div class="quick-bets" id="betQuick"><button type="button" data-action="half">½</button><button type="button" data-action="double">2×</button><button type="button" data-action="max">MAX</button></div></div><div class="launch-readout"><div><span>Flight status</span><strong id="flightStatus">Grounded</strong></div><div><span>Peak this round</span><strong id="peakValue">1.00×</strong></div></div><button id="primaryBtn" class="primary-btn" type="button"><span>Launch</span><b>↗</b></button><button id="cashoutBtn" class="cashout-btn" type="button" disabled><span>Cash out</span><strong id="cashoutValue">$0.00</strong><em id="cashoutMult">0.00×</em></button><p class="hint" id="hintText">Place your bet, then cash out before the flight ends.</p><div class="session-strip"><div><span>Rounds</span><strong id="sessionRounds">0</strong></div><div><span>Won</span><strong id="sessionWins">0</strong></div><div><span>Lost</span><strong id="sessionLosses">0</strong></div></div></aside>
+      </div>
+      <section class="lower-grid"><div class="info-panel"><div class="panel-heading"><div><span class="section-kicker">RECENT FLIGHTS</span><h2>Round history</h2></div><span class="history-count" id="historyCount">0 / 10</span></div><div class="history" id="history"><div class="empty-history">Your completed flights will appear here.</div></div></div><div class="info-panel responsible"><div class="panel-heading"><div><span class="section-kicker">PLAY SMART</span><h2>Know the game</h2></div><span class="shield">◆</span></div><p>Lift Off is a game of chance with a <strong>2% house edge</strong>. The flight can end at any multiplier, so cash out when the moment feels right.</p><div class="smart-facts"><span><b>Demo balance</b> Simulated funds only</span><span><b>Fair play</b> Outcomes use client RNG in this demo</span></div></div></section>
+    </main>
+    <footer><span>© 2026 NEXBE ORIGINALS</span><span>18+ · Game of chance · Play responsibly</span><span>Demo environment</span></footer>
+  </div>
+  <div class="modal-overlay hidden" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="result-modal settings-modal"><button class="modal-close" id="settingsClose" type="button" aria-label="Close settings">×</button><span class="section-kicker">PREFERENCES</span><h2 id="settingsTitle">Game settings</h2><label class="setting-row" for="volumeInput"><span>Sound volume</span><input id="volumeInput" type="range" min="0" max="1" step="0.05" value="0.65" /></label><button class="secondary-btn" id="resetBalance" type="button">Reset demo balance</button></div></div>
+  <div class="modal-overlay hidden" id="resultModal" role="dialog" aria-modal="true" aria-labelledby="resultTitle"><div class="result-modal"><button class="modal-close" id="modalClose" type="button" aria-label="Close result">×</button><span class="result-icon" id="resultIcon">$</span><span class="section-kicker" id="resultKicker">FLIGHT COMPLETE</span><h2 id="resultTitle">You won</h2><strong class="result-amount" id="resultAmount">+$28.10</strong><p id="resultBody">Good timing. Your payout is locked in.</p><div class="result-detail" id="resultDetail"></div><button class="primary-btn" id="playAgain" type="button"><span>Fly again</span><b>↗</b></button></div></div>
+  <script src="../js/lift-off.js"></script>
+</body>
+
+</html>

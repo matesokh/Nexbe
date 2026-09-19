@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#07090d" />
+  <title>NEXBE — Mines</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/styles.css" />
+</head>
+
+<body>
+  <div class="loading-screen" id="loadingScreen" aria-hidden="true"><div class="loading-logo"><span class="brand-mark"><i></i><b></b></span><span class="brand-word">nexbe</span></div><span>LOADING MINES</span></div>
+  <div class="ambient" aria-hidden="true"></div>
+  <div class="app-shell">
+    <header class="topbar"><a class="brand" href="index.html" aria-label="Nexbe home"><span class="brand-mark" aria-hidden="true"><i></i><b></b></span><span class="brand-word">nexbe</span></a>
+      <nav class="main-nav" aria-label="Primary navigation"><a href="index.html#home">Home</a><a class="active" href="games.html">Games</a><a href="index.html#about">About</a><a href="index.html#contact">Contact</a></nav>
+      <div class="top-actions"><div class="wallet"><span class="status-dot"></span><span class="wallet-label">Wallet</span><strong id="balanceValue">$1,000.00</strong></div><button class="icon-btn" id="soundBtn" type="button" aria-label="Turn sound off" aria-pressed="true">◉</button><button class="icon-btn" id="settingsBtn" type="button" aria-label="Open settings">⚙</button><button class="avatar" type="button" aria-label="Open profile">NX</button></div>
+    </header>
+    <main>
+      <section class="hero-line mines-hero"><div><p class="eyebrow"><span class="live-dot"></span> NEXBE ORIGINAL</p><h1>Read the <span>field.</span></h1><p class="lede">Find the safe tiles. Keep your nerve. Cash out before the next step.</p></div><div class="live-stats"><div><span>Current bet</span><strong id="liveBet">$10.00</strong></div><div><span>Potential payout</span><strong class="gold" id="livePayout">$0.00</strong></div><div><span>Session P/L</span><strong id="sessionNet">+$0.00</strong></div></div></section>
+      <div class="game-layout mines-layout">
+        <section class="mines-card" aria-label="Mines game board"><div class="tower-header"><div><span class="section-kicker">THE FIELD</span><h2>Choose a tile</h2></div><div class="mines-key"><span><i class="key-dot safe-dot"></i> Safe</span><span><i class="key-dot mine-dot"></i> Mine</span></div></div><div class="mines-stage"><div class="mines-grid" id="minesGrid"></div></div><div class="board-footer"><span><b id="safeValue">0</b> safe tiles found</span><span class="fair-badge">◈ Independent tile draws</span></div></section>
+        <aside class="control-panel"><div class="panel-heading"><div><span class="section-kicker">YOUR RUN</span><h2>Set your risk</h2></div><span class="round-id" id="roundStatus">READY</span></div><div class="control-block bet-block"><div class="control-label"><label for="betInput">Bet amount</label><span class="balance-mini" id="miniBalance">$1,000.00 available</span></div><div class="amount-field"><span>$</span><input id="betInput" type="text" inputmode="decimal" value="10.00" aria-label="Bet amount" /><div class="stepper"><button id="betStepUp" type="button" aria-label="Increase bet">+</button><button id="betStepDown" type="button" aria-label="Decrease bet">−</button></div></div><div class="quick-bets" id="betQuick"><button type="button" data-action="half">½</button><button type="button" data-action="double">2×</button><button type="button" data-action="max">MAX</button></div></div><div class="control-block"><div class="control-label"><span>Mines</span><span id="oddsLabel">3 mines · 22 safe</span></div><div class="difficulty mines-difficulty" id="diffToggle"><button type="button" class="active" data-mines="3"><b>Low</b><small>3 mines</small></button><button type="button" data-mines="5"><b>Medium</b><small>5 mines</small></button><button type="button" data-mines="8"><b>High</b><small>8 mines</small></button></div></div><div class="round-readout"><div><span>Safe tiles</span><strong id="safeReadout">00 <small>/ 22</small></strong></div><div><span>Multiplier</span><strong id="multValue">1.00×</strong></div></div><button id="primaryBtn" class="primary-btn" type="button"><span>Place bet</span><b>↗</b></button><button id="cashoutBtn" class="cashout-btn" type="button" disabled><span>Cash out</span><strong id="cashoutValue">$0.00</strong><em id="cashoutMult">0.00×</em></button><p class="hint" id="hintText">Pick a bet and mine count, then reveal a tile.</p><div class="session-strip"><div><span>Rounds</span><strong id="sessionRounds">0</strong></div><div><span>Won</span><strong id="sessionWins">0</strong></div><div><span>Lost</span><strong id="sessionLosses">0</strong></div></div></aside>
+      </div>
+      <section class="lower-grid"><div class="info-panel"><div class="panel-heading"><div><span class="section-kicker">RECENT RUNS</span><h2>Round history</h2></div><span class="history-count" id="historyCount">0 / 10</span></div><div class="history" id="history"><div class="empty-history">Your completed runs will appear here.</div></div></div><div class="info-panel responsible"><div class="panel-heading"><div><span class="section-kicker">PLAY SMART</span><h2>Know the game</h2></div><span class="shield">◆</span></div><p>Mines is a game of chance with a <strong>2% house edge</strong>. Every tile is an independent draw, and you can cash out any time after a safe reveal.</p><div class="smart-facts"><span><b>Demo balance</b> Simulated funds only</span><span><b>Fair play</b> Outcomes use client RNG in this demo</span></div></div></section>
+    </main>
+    <footer><span>© 2026 NEXBE ORIGINALS</span><span>18+ · Game of chance · Play responsibly</span><span>Demo environment</span></footer>
+  </div>
+  <div class="modal-overlay hidden" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="result-modal settings-modal"><button class="modal-close" id="settingsClose" type="button" aria-label="Close settings">×</button><span class="section-kicker">PREFERENCES</span><h2 id="settingsTitle">Game settings</h2><label class="setting-row" for="volumeInput"><span>Sound volume</span><input id="volumeInput" type="range" min="0" max="1" step="0.05" value="0.65" /></label><button class="secondary-btn" id="resetBalance" type="button">Reset demo balance</button></div></div>
+  <div class="modal-overlay hidden" id="resultModal" role="dialog" aria-modal="true" aria-labelledby="resultTitle"><div class="result-modal"><button class="modal-close" id="modalClose" type="button" aria-label="Close result">×</button><span class="result-icon" id="resultIcon">$</span><span class="section-kicker" id="resultKicker">ROUND COMPLETE</span><h2 id="resultTitle">You won</h2><strong class="result-amount" id="resultAmount">+$28.10</strong><p id="resultBody">Great read. You found the safe path.</p><div class="result-detail" id="resultDetail"></div><button class="primary-btn" id="playAgain" type="button"><span>Play again</span><b>↗</b></button></div></div>
+  <script src="../js/mines.js"></script>
+</body>
+
+</html>
