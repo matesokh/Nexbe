@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#07090d" />
+  <meta name="description" content="Nexbe Online Poker — play Texas Hold'em with your friends in real time." />
+  <title>NEXBE — Online Poker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/styles.css" />
+  <link rel="stylesheet" href="../css/poker-online.css" />
+</head>
+
+<body>
+  <!-- ░░ Loading screen ░░ -->
+  <div class="loading-screen" id="loadingScreen" aria-hidden="true">
+    <div class="loading-logo"><span class="brand-mark"><i></i><b></b></span><span class="brand-word">nexbe</span></div>
+    <span>CONNECTING TO TABLE</span>
+  </div>
+
+  <!-- ░░ Ambient glow ░░ -->
+  <div class="ambient" aria-hidden="true"></div>
+
+  <div class="app-shell">
+    <!-- ░░ Top bar ░░ -->
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="Nexbe home">
+        <span class="brand-mark" aria-hidden="true"><i></i><b></b></span>
+        <span class="brand-word">nexbe</span>
+      </a>
+      <nav class="main-nav" aria-label="Primary navigation">
+        <a href="index.html#home">Home</a>
+        <a class="active" href="games.html">Games</a>
+        <a href="index.html#about">About</a>
+        <a href="index.html#contact">Contact</a>
+      </nav>
+      <div class="top-actions">
+        <div class="wallet online-chip-count">
+          <span class="status-dot" id="connDot"></span>
+          <span class="wallet-label" id="connLabel">Offline</span>
+          <strong id="myChips">$1,000</strong>
+        </div>
+        <button class="icon-btn" id="settingsBtn" type="button" aria-label="Open settings">⚙</button>
+        <button class="avatar" type="button" id="myAvatarBtn" aria-label="Open profile">NX</button>
+      </div>
+    </header>
+
+    <main>
+      <!-- ░░ Hero ░░ -->
+      <section class="hero-line">
+        <div>
+          <p class="eyebrow"><span class="live-dot"></span> NEXBE ONLINE</p>
+          <h1>Play with your <span>friends.</span></h1>
+          <p class="lede">Real-time Texas Hold'em — share a room code and deal.</p>
+        </div>
+        <div class="live-stats">
+          <div><span>Room</span><strong id="statRoom">—</strong></div>
+          <div><span>Players</span><strong id="statPlayers">0 / 4</strong></div>
+          <div><span>Session P/L</span><strong id="sessionNet">+$0</strong></div>
+        </div>
+      </section>
+
+      <!-- ░░ Game layout ░░ -->
+      <div class="game-layout poker-layout">
+
+        <!-- ░░░░░░░░ LOBBY OVERLAY ░░░░░░░░ -->
+        <div class="lobby-overlay" id="lobbyOverlay">
+          <div class="lobby-card">
+            <div class="lobby-brand">
+              <span class="brand-mark"><i></i><b></b></span>
+              <h2>Nexbe Poker</h2>
+              <p>Texas Hold'em with friends</p>
+            </div>
+
+            <!-- Name entry (shown first) -->
+            <div class="lobby-step" id="stepName">
+              <label class="lobby-label" for="nameInput">Your display name</label>
+              <div class="lobby-input-row">
+                <input id="nameInput" type="text" maxlength="14" placeholder="Enter your name…" autocomplete="off" />
+                <button class="primary-btn lobby-confirm" id="confirmNameBtn" type="button">
+                  <span>Continue</span><b>↗</b>
+                </button>
+              </div>
+            </div>
+
+            <!-- Create / Join (shown after name) -->
+            <div class="lobby-step hidden" id="stepActions">
+              <div class="lobby-actions">
+                <button class="lobby-big-btn create-btn" id="createRoomBtn" type="button">
+                  <span class="lba-icon">⊞</span>
+                  <span class="lba-text">
+                    <strong>Create Room</strong>
+                    <small>Start a new table</small>
+                  </span>
+                </button>
+                <button class="lobby-big-btn join-btn" id="showJoinBtn" type="button">
+                  <span class="lba-icon">⊕</span>
+                  <span class="lba-text">
+                    <strong>Join Room</strong>
+                    <small>Enter a code</small>
+                  </span>
+                </button>
+              </div>
+              <div class="join-panel hidden" id="joinPanel">
+                <label class="lobby-label" for="codeInput">Room code</label>
+                <div class="lobby-input-row">
+                  <input id="codeInput" type="text" maxlength="4" placeholder="ABCD" autocomplete="off"
+                    style="text-transform:uppercase; letter-spacing:.2em; font-weight:700;" />
+                  <button class="primary-btn lobby-confirm" id="joinRoomBtn" type="button">
+                    <span>Join</span><b>↗</b>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Waiting room (after create/join) -->
+            <div class="lobby-step hidden" id="stepWaiting">
+              <div class="room-code-display" id="roomCodeDisplay">
+                <span class="rcd-label">ROOM CODE</span>
+                <span class="rcd-code" id="rcdCode">—</span>
+                <button class="copy-btn" id="copyCodeBtn" type="button" title="Copy code">⧉</button>
+              </div>
+
+              <!-- Invite link -->
+              <div class="invite-link-box" id="inviteLinkBox">
+                <div class="invite-header">
+                  <span class="invite-label">🔗 Share Invite</span>
+                  <div class="invite-tabs">
+                    <button class="invite-tab active" id="tabWifi" type="button" title="For friends connected to your Wi-Fi">Same Wi-Fi</button>
+                    <button class="invite-tab" id="tabInternet" type="button" title="For remote friends anywhere online">Anywhere Online 🌐</button>
+                  </div>
+                </div>
+
+                <div class="invite-link-row">
+                  <span class="invite-url" id="inviteUrl">—</span>
+                  <button class="copy-btn" id="copyLinkBtn" type="button" title="Copy invite link">⧉</button>
+                </div>
+
+                <div class="invite-desc-row">
+                  <p class="invite-desc" id="inviteDesc">Friends on your Wi-Fi network can open this link to join directly.</p>
+                  <button class="tunnel-gen-btn hidden" id="generateTunnelBtn" type="button">⚡ Create Online Link</button>
+                </div>
+              </div>
+
+              <p class="lobby-hint">Share the code <em>or</em> the link — friends who click it join instantly</p>
+              <div class="seat-list" id="seatList"></div>
+              <button class="primary-btn start-btn hidden" id="startGameBtn" type="button">
+                <span>Start Game</span><b>↗</b>
+              </button>
+              <p class="lobby-hint" id="waitingHint">Waiting for the host to start…</p>
+            </div>
+
+            <p class="lobby-error hidden" id="lobbyError"></p>
+          </div>
+        </div>
+        <!-- ░░░░░░░░ END LOBBY ░░░░░░░░ -->
+
+        <!-- ░░░░ TABLE ░░░░ -->
+        <section class="poker-card" aria-label="Poker table" id="tableSection">
+          <div class="poker-table-heading">
+            <span class="section-kicker">THE TABLE</span>
+            <strong id="tableHeadingDetail">ONLINE · UP TO 4 PLAYERS</strong>
+          </div>
+          <div class="poker-table" id="pokerTable">
+            <!-- Seats rendered dynamically by JS -->
+          </div>
+          <div class="board-footer">
+            <span>Room: <b id="footerRoom">—</b></span>
+            <span class="fair-badge">⬡ Real-time · Socket.io</span>
+          </div>
+        </section>
+
+        <!-- ░░░░ CONTROL PANEL ░░░░ -->
+        <aside class="control-panel poker-controls">
+          <div class="panel-heading">
+            <div>
+              <span class="section-kicker">YOUR HAND</span>
+              <h2>Make a play</h2>
+            </div>
+            <span class="round-id" id="roundStatus">LOBBY</span>
+          </div>
+
+          <!-- Hand readout -->
+          <div class="poker-readout">
+            <div><span>Your cards</span><strong id="handReadout">—</strong></div>
+            <div><span>Current pot</span><strong id="potReadout">$0</strong></div>
+          </div>
+
+          <!-- Turn Timer Bar (shown when it's your turn) -->
+          <div class="turn-timer-wrap hidden" id="turnTimerWrap">
+            <div class="turn-timer-inner">
+              <div class="timer-ring-wrap">
+                <svg class="timer-ring" viewBox="0 0 44 44">
+                  <circle class="timer-ring-bg" cx="22" cy="22" r="18"/>
+                  <circle class="timer-ring-fill" id="timerRingFill" cx="22" cy="22" r="18"/>
+                </svg>
+                <span class="timer-ring-count" id="timerCount">40</span>
+              </div>
+              <div class="timer-bar-wrap">
+                <div class="timer-bar-track">
+                  <div class="timer-bar-fill" id="timerBarFill"></div>
+                </div>
+                <span class="timer-label" id="timerLabel">Your turn — act in <b id="timerSecs">40</b>s</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Opponent timer (shown when waiting) -->
+          <div class="opp-timer-wrap hidden" id="oppTimerWrap">
+            <span class="opp-timer-label" id="oppTimerLabel">Waiting…</span>
+            <div class="opp-timer-bar-track">
+              <div class="opp-timer-bar-fill" id="oppTimerBarFill"></div>
+            </div>
+          </div>
+
+          <!-- Action buttons -->
+          <div class="poker-actions online-actions">
+            <button id="checkBtn" class="secondary-btn poker-check" type="button" disabled>Check</button>
+            <button id="callBtn" class="secondary-btn poker-call" type="button" disabled>Call</button>
+            <button id="raiseBtn" class="secondary-btn poker-raise" type="button" disabled>Raise</button>
+            <button id="foldBtn" class="secondary-btn poker-fold" type="button" disabled>Fold</button>
+          </div>
+
+          <!-- Raise panel (shown when raise is available) -->
+          <div class="raise-panel hidden" id="raiseSliderWrap">
+            <div class="raise-panel-header">
+              <span class="raise-panel-title">Set Raise Amount</span>
+              <output class="raise-amount-display" id="raiseSliderValue">$20</output>
+            </div>
+            <div class="raise-slider-track-wrap">
+              <input id="raiseSlider" type="range" class="raise-slider-input" min="10" max="1000" step="10" value="20" aria-label="Raise amount" />
+              <div class="raise-slider-track-fill" id="raiseSliderFill"></div>
+            </div>
+            <div class="raise-quick-btns">
+              <button class="quick-bet-btn" id="quickBetHalf" type="button">½ Pot</button>
+              <button class="quick-bet-btn" id="quickBetPot" type="button">Pot</button>
+              <button class="quick-bet-btn" id="quickBet2x" type="button">2×</button>
+              <button class="quick-bet-btn quick-bet-allin" id="quickBetAllin" type="button">All-in</button>
+            </div>
+            <div class="raise-panel-limits">
+              <span id="raiseSliderLimit">Max: $1000</span>
+            </div>
+          </div>
+
+          <p class="hint" id="hintText">Join or create a room to start playing.</p>
+
+          <!-- Session strip -->
+          <div class="session-strip">
+            <div><span>Hands</span><strong id="sessionRounds">0</strong></div>
+            <div><span>Won</span><strong id="sessionWins">0</strong></div>
+            <div><span>Lost</span><strong id="sessionLosses">0</strong></div>
+          </div>
+        </aside>
+      </div>
+
+      <!-- History & Info -->
+      <section class="lower-grid">
+        <div class="info-panel">
+          <div class="panel-heading">
+            <div><span class="section-kicker">RECENT HANDS</span>
+              <h2>Table history</h2>
+            </div>
+            <span class="history-count" id="historyCount">0 / 10</span>
+          </div>
+          <div class="history" id="history">
+            <div class="empty-history">Your completed hands will appear here.</div>
+          </div>
+        </div>
+        <div class="info-panel responsible">
+          <div class="panel-heading">
+            <div><span class="section-kicker">PLAY SMART</span>
+              <h2>Know the game</h2>
+            </div><span class="shield">◆</span>
+          </div>
+          <p>Online poker with <strong>friends only</strong>. Share a room code — no account needed. All chips are fictional demo funds.</p>
+          <div class="smart-facts">
+            <span><b>Room code</b> 4-letter · expires when empty</span>
+            <span><b>Bots fill</b> empty seats automatically</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>© 2026 NEXBE ORIGINALS</span>
+      <span>18+ · Game of chance · Play responsibly</span>
+      <span>Demo environment</span>
+    </footer>
+  </div>
+
+  <!-- ░░ Settings modal ░░ -->
+  <div class="modal-overlay hidden" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <div class="result-modal settings-modal">
+      <button class="modal-close" id="settingsClose" type="button" aria-label="Close settings">×</button>
+      <span class="section-kicker">PREFERENCES</span>
+      <h2 id="settingsTitle">Game settings</h2>
+      <label class="setting-row" for="volumeInput">
+        <span>Sound volume</span>
+        <input id="volumeInput" type="range" min="0" max="1" step="0.05" value="0.65" />
+      </label>
+      <button class="secondary-btn" id="resetBalance" type="button">Reset my chip balance</button>
+    </div>
+  </div>
+
+  <!-- ░░ Result modal ░░ -->
+  <div class="modal-overlay hidden" id="resultModal" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+    <div class="result-modal">
+      <button class="modal-close" id="modalClose" type="button" aria-label="Close result">×</button>
+      <span class="result-icon" id="resultIcon">♠</span>
+      <span class="section-kicker">HAND COMPLETE</span>
+      <h2 id="resultTitle">Winner!</h2>
+      <strong class="result-amount" id="resultAmount">+$0</strong>
+      <p id="resultBody">—</p>
+      <div class="result-detail" id="resultDetail"></div>
+      <div class="showdown-hands" id="showdownHands"></div>
+      <button class="primary-btn" id="playAgain" type="button"><span>Back to Lobby</span><b>↗</b></button>
+    </div>
+  </div>
+
+  <!-- Socket.io client (loads from CDN or server fallback) -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script>
+    if (typeof io === 'undefined') {
+      document.write('<script src="/socket.io/socket.io.js"><\/script>');
+    }
+  </script>
+  <script src="../js/poker-online.js"></script>
+</body>
+
+</html>

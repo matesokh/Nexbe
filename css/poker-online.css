@@ -1,0 +1,819 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   poker-online.css  ·  Nexbe Online Poker — supplementary styles
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Lobby overlay ─────────────────────────────────────────────────────────── */
+.lobby-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(7, 9, 13, 0.85);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-radius: inherit;
+  transition: opacity .35s ease;
+}
+
+.lobby-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Position relative on parent so overlay can be absolute */
+.game-layout {
+  position: relative;
+}
+
+.lobby-card {
+  background: linear-gradient(145deg, rgba(255,255,255,.04) 0%, rgba(255,255,255,.01) 100%);
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 20px;
+  padding: 2.4rem 2.2rem 2.2rem;
+  width: min(480px, 92vw);
+  box-shadow: 0 40px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.04);
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  animation: lobbyFadeIn .5s ease both;
+}
+
+@keyframes lobbyFadeIn {
+  from { opacity: 0; transform: translateY(18px) scale(.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.lobby-brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+}
+
+.lobby-brand .brand-mark {
+  width: 36px;
+  height: 36px;
+  display: grid;
+}
+
+.lobby-brand h2 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -.01em;
+}
+
+.lobby-brand p {
+  font-size: .78rem;
+  opacity: .5;
+  margin: .1rem 0 0;
+}
+
+.lobby-label {
+  display: block;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  opacity: .5;
+  margin-bottom: .6rem;
+}
+
+.lobby-input-row {
+  display: flex;
+  gap: .6rem;
+}
+
+.lobby-input-row input {
+  flex: 1;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 10px;
+  padding: .7rem 1rem;
+  color: #fff;
+  font-family: inherit;
+  font-size: .95rem;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.lobby-input-row input:focus {
+  border-color: rgba(255,255,255,.3);
+  box-shadow: 0 0 0 3px rgba(255,255,255,.06);
+}
+
+.lobby-confirm {
+  padding: .7rem 1.2rem !important;
+  white-space: nowrap;
+  font-size: .88rem !important;
+}
+
+/* ── Create / Join buttons ─────────────────────────────────────────────────── */
+.lobby-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .8rem;
+}
+
+.lobby-big-btn {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+  cursor: pointer;
+  transition: background .2s, border-color .2s, transform .18s;
+  text-align: left;
+  color: #fff;
+}
+
+.lobby-big-btn:hover {
+  background: rgba(255,255,255,.08);
+  border-color: rgba(255,255,255,.18);
+  transform: translateY(-2px);
+}
+
+.lba-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+  opacity: .7;
+}
+
+.lba-text strong {
+  display: block;
+  font-size: .95rem;
+  font-weight: 700;
+}
+
+.lba-text small {
+  font-size: .75rem;
+  opacity: .5;
+  margin-top: .15rem;
+  display: block;
+}
+
+.create-btn:hover { border-color: rgba(99, 179, 237, .4); }
+.join-btn:hover   { border-color: rgba(154, 205, 100, .4); }
+
+/* ── Join panel ───────────────────────────────────────────────────────────── */
+.join-panel {
+  margin-top: .4rem;
+  animation: lobbyFadeIn .3s ease both;
+}
+
+/* ── Room code display ────────────────────────────────────────────────────── */
+.room-code-display {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 12px;
+  padding: .9rem 1.1rem;
+}
+
+.rcd-label {
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  opacity: .4;
+  white-space: nowrap;
+}
+
+.rcd-code {
+  font-family: 'DM Mono', monospace;
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: .25em;
+  color: #fff;
+  flex: 1;
+}
+
+/* ── Invite link box ──────────────────────────────────────────────────────── */
+.invite-link-box {
+  background: rgba(6, 182, 212, .06);
+  border: 1px solid rgba(6, 182, 212, .2);
+  border-radius: 12px;
+  padding: .75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .45rem;
+  animation: lobbyFadeIn .3s ease both;
+}
+
+.invite-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+}
+
+.invite-label {
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: #67e8f9;
+  opacity: .8;
+}
+
+.invite-tabs {
+  display: flex;
+  background: rgba(255, 255, 255, .06);
+  border-radius: 8px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.invite-tab {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, .6);
+  font-size: .68rem;
+  font-weight: 600;
+  padding: .25rem .6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+
+.invite-tab:hover {
+  color: #fff;
+}
+
+.invite-tab.active {
+  background: rgba(6, 182, 212, .25);
+  color: #a5f3fc;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .2);
+}
+
+.invite-desc-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  margin-top: .15rem;
+}
+
+.invite-desc {
+  font-size: .68rem;
+  color: rgba(255, 255, 255, .5);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.tunnel-gen-btn {
+  background: linear-gradient(135deg, #06b6d4, #3b82f6);
+  color: #fff;
+  border: none;
+  font-size: .68rem;
+  font-weight: 700;
+  padding: .3rem .65rem;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity .15s ease, transform .1s ease;
+}
+
+.tunnel-gen-btn:hover {
+  opacity: .9;
+  transform: translateY(-1px);
+}
+
+.tunnel-gen-btn:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.invite-link-row {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+}
+
+.invite-url {
+  font-family: 'DM Mono', monospace;
+  font-size: .78rem;
+  color: #a5f3fc;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: .9;
+}
+
+.copy-btn {
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 8px;
+  padding: .4rem .7rem;
+  color: #fff;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background .2s;
+}
+.copy-btn:hover { background: rgba(255,255,255,.14); }
+
+/* ── Seat list in lobby ───────────────────────────────────────────────────── */
+.seat-list {
+  display: flex;
+  flex-direction: column;
+  gap: .45rem;
+}
+
+.seat-slot {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 10px;
+  padding: .6rem .9rem;
+  transition: border-color .2s;
+}
+
+.seat-slot.mine {
+  border-color: rgba(255,255,255,.16);
+  background: rgba(255,255,255,.06);
+}
+
+.seat-slot.empty { opacity: .45; }
+
+.ss-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.1);
+  display: grid;
+  place-items: center;
+  font-size: .7rem;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  flex-shrink: 0;
+}
+
+.empty-avatar { background: rgba(255,255,255,.05); }
+
+.ss-name {
+  flex: 1;
+  font-size: .88rem;
+  font-weight: 600;
+}
+
+.ss-status {
+  font-size: .72rem;
+  opacity: .45;
+}
+
+.ss-status.connected {
+  color: #4ade80;
+  opacity: 1;
+}
+
+/* ── Start button ─────────────────────────────────────────────────────────── */
+.start-btn {
+  width: 100%;
+  justify-content: center;
+  margin-top: .2rem;
+}
+
+/* ── Lobby hint / error ───────────────────────────────────────────────────── */
+.lobby-hint {
+  font-size: .78rem;
+  opacity: .4;
+  text-align: center;
+  margin: 0;
+}
+
+.lobby-error {
+  font-size: .82rem;
+  color: #f87171;
+  background: rgba(248, 113, 113, .1);
+  border: 1px solid rgba(248,113,113,.2);
+  border-radius: 8px;
+  padding: .6rem .9rem;
+  text-align: center;
+  animation: lobbyFadeIn .25s ease both;
+}
+
+/* ── Lobby step transitions ───────────────────────────────────────────────── */
+.lobby-step {
+  animation: lobbyFadeIn .3s ease both;
+}
+
+/* ── Active turn highlight ────────────────────────────────────────────────── */
+.player-seat.active-turn {
+  box-shadow: 0 0 0 2px rgba(99, 179, 237, .5), 0 0 30px rgba(99,179,237,.1);
+  border-radius: inherit;
+  animation: turnPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes turnPulse {
+  0%,100% { box-shadow: 0 0 0 2px rgba(99,179,237,.5), 0 0 30px rgba(99,179,237,.1); }
+  50%      { box-shadow: 0 0 0 3px rgba(99,179,237,.8), 0 0 50px rgba(99,179,237,.2); }
+}
+
+/* ── Folded seat ──────────────────────────────────────────────────────────── */
+.folded-seat {
+  opacity: .35;
+  filter: grayscale(1);
+}
+
+/* ── Raise slider ─────────────────────────────────────────────────────────── */
+.raise-slider {
+  margin-top: -.4rem;
+  margin-bottom: .2rem;
+  padding: .8rem 1rem;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 10px;
+  animation: lobbyFadeIn .2s ease both;
+}
+
+/* ── Online actions layout ────────────────────────────────────────────────── */
+.online-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .5rem;
+}
+
+/* ── Connection status dot ────────────────────────────────────────────────── */
+#connDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ef4444;
+  display: inline-block;
+  transition: background .4s;
+}
+
+/* ── Showdown hands in result modal ──────────────────────────────────────── */
+.showdown-hands {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .8rem;
+  justify-content: center;
+  margin: .6rem 0;
+}
+
+.showdown-player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .35rem;
+  font-size: .78rem;
+  opacity: .85;
+}
+
+.showdown-player span { font-weight: 700; }
+.showdown-player small { opacity: .6; }
+
+.showdown-mini {
+  display: flex;
+  gap: .25rem;
+}
+
+.showdown-mini .playing-card {
+  transform: scale(.75);
+  transform-origin: top left;
+}
+
+/* ── Chip counter in topbar ───────────────────────────────────────────────── */
+.online-chip-count {
+  gap: .5rem;
+}
+
+/* ── Hidden utility ──────────────────────────────────────────────────────── */
+.hidden { display: none !important; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Games page — Online Poker card
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Art panel: teal-to-indigo gradient to distinguish from regular poker */
+.poker-online-art {
+  background: linear-gradient(135deg, #0f3460 0%, #16213e 40%, #0d1b2a 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.poker-online-art::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 70% 40%, rgba(6, 182, 212, .18) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 20% 80%, rgba(99, 102, 241, .15) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* Suit decorations reusing existing i/b elements */
+.poker-online-art i {
+  position: absolute;
+  font-style: normal;
+  color: rgba(6, 182, 212, .22);
+  font-size: 3.2rem;
+  font-weight: 900;
+  line-height: 1;
+  user-select: none;
+}
+
+.poker-online-art i:nth-child(3) { bottom: 1.2rem; right: 1.4rem; content: '♠'; }
+.poker-online-art i::before { content: '♠'; }
+
+.poker-online-art b {
+  position: absolute;
+  font-style: normal;
+  color: rgba(99, 102, 241, .18);
+  font-size: 2.4rem;
+  bottom: 2.2rem;
+  left: 1.4rem;
+  user-select: none;
+}
+.poker-online-art b::before { content: '♣'; }
+
+/* LIVE badge inside the card art */
+.online-badge {
+  position: absolute;
+  top: .9rem;
+  right: .9rem;
+  background: rgba(6, 182, 212, .15);
+  border: 1px solid rgba(6, 182, 212, .35);
+  border-radius: 6px;
+  padding: .25rem .55rem;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  color: #67e8f9;
+  backdrop-filter: blur(6px);
+  animation: livePulse 2.5s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(6,182,212,.4); }
+  50%       { opacity: .8; box-shadow: 0 0 0 5px rgba(6,182,212,0); }
+}
+
+/* Online status dot in card-status */
+.online-status {
+  color: #67e8f9 !important;
+}
+
+.online-status i {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #06b6d4;
+  box-shadow: 0 0 6px #06b6d4;
+  margin-right: .35rem;
+  animation: livePulse 1.8s ease-in-out infinite;
+  vertical-align: middle;
+}
+
+/* Hover glow tint for the whole card */
+.game-card-online:hover {
+  box-shadow: 0 20px 60px rgba(6, 182, 212, .12), 0 0 0 1px rgba(6,182,212,.2);
+}
+
+/* ── Turn Timer ─────────────────────────────────────────────────────────────── */
+.turn-timer-wrap {
+  margin: 8px 0 4px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(16,185,129,.12), rgba(6,182,212,.08));
+  border: 1px solid rgba(16,185,129,.25);
+  padding: 10px 14px;
+  animation: timerGlow 1s ease-in-out infinite alternate;
+}
+.turn-timer-wrap.urgent {
+  background: linear-gradient(135deg, rgba(239,68,68,.15), rgba(239,68,68,.08));
+  border-color: rgba(239,68,68,.4);
+  animation: timerUrgent .5s ease-in-out infinite alternate;
+}
+
+@keyframes timerGlow {
+  from { box-shadow: 0 0 8px rgba(16,185,129,.15); }
+  to   { box-shadow: 0 0 18px rgba(16,185,129,.35); }
+}
+@keyframes timerUrgent {
+  from { box-shadow: 0 0 8px rgba(239,68,68,.2); }
+  to   { box-shadow: 0 0 20px rgba(239,68,68,.5); }
+}
+
+.turn-timer-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* SVG ring */
+.timer-ring-wrap {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+.timer-ring {
+  width: 44px;
+  height: 44px;
+  transform: rotate(-90deg);
+}
+.timer-ring-bg {
+  fill: none;
+  stroke: rgba(255,255,255,.08);
+  stroke-width: 4;
+}
+.timer-ring-fill {
+  fill: none;
+  stroke: #10b981;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 113;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset .9s linear, stroke .3s;
+}
+.turn-timer-wrap.urgent .timer-ring-fill { stroke: #ef4444; }
+
+.timer-ring-count {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #10b981;
+  line-height: 1;
+}
+.turn-timer-wrap.urgent .timer-ring-count { color: #ef4444; }
+
+/* Bar */
+.timer-bar-wrap { flex: 1; }
+.timer-bar-track {
+  height: 5px;
+  border-radius: 99px;
+  background: rgba(255,255,255,.08);
+  overflow: hidden;
+  margin-bottom: 5px;
+}
+.timer-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #10b981, #06b6d4);
+  transition: width .9s linear, background .3s;
+  width: 100%;
+}
+.turn-timer-wrap.urgent .timer-bar-fill {
+  background: linear-gradient(90deg, #ef4444, #f97316);
+}
+.timer-label {
+  font-size: 11px;
+  color: rgba(255,255,255,.65);
+}
+.timer-label b { color: #10b981; }
+.turn-timer-wrap.urgent .timer-label b { color: #ef4444; }
+
+/* Opponent timer */
+.opp-timer-wrap {
+  margin: 6px 0 2px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.opp-timer-label {
+  font-size: 11px;
+  color: rgba(255,255,255,.45);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.opp-timer-bar-track {
+  flex: 1;
+  height: 3px;
+  border-radius: 99px;
+  background: rgba(255,255,255,.07);
+  overflow: hidden;
+}
+.opp-timer-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: rgba(255,255,255,.2);
+  transition: width .9s linear;
+  width: 100%;
+}
+
+/* ── Premium Raise Panel ─────────────────────────────────────────────────────── */
+.raise-panel {
+  margin: 8px 0;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 14px;
+  padding: 12px 14px;
+  backdrop-filter: blur(8px);
+}
+
+.raise-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.raise-panel-title {
+  font-size: 11px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.45);
+}
+.raise-amount-display {
+  font-size: 22px;
+  font-weight: 800;
+  color: #f59e0b;
+  letter-spacing: -.5px;
+}
+
+/* Custom slider */
+.raise-slider-track-wrap {
+  position: relative;
+  margin-bottom: 12px;
+}
+.raise-slider-input {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 99px;
+  background: rgba(255,255,255,.1);
+  outline: none;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+}
+.raise-slider-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+  border: 3px solid rgba(0,0,0,.4);
+  box-shadow: 0 0 10px rgba(245,158,11,.5);
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
+}
+.raise-slider-input::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 18px rgba(245,158,11,.7);
+}
+.raise-slider-input::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+  border: 3px solid rgba(0,0,0,.4);
+  cursor: pointer;
+}
+
+/* Quick bet buttons */
+.raise-quick-btns {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.quick-bet-btn {
+  padding: 5px 4px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.75);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, transform .1s;
+  text-align: center;
+}
+.quick-bet-btn:hover {
+  background: rgba(255,255,255,.12);
+  border-color: rgba(255,255,255,.25);
+  transform: translateY(-1px);
+}
+.quick-bet-allin {
+  background: rgba(239,68,68,.12) !important;
+  border-color: rgba(239,68,68,.3) !important;
+  color: #f87171 !important;
+}
+.quick-bet-allin:hover {
+  background: rgba(239,68,68,.22) !important;
+  border-color: rgba(239,68,68,.5) !important;
+}
+
+.raise-panel-limits {
+  font-size: 10px;
+  color: rgba(255,255,255,.3);
+  text-align: right;
+}
+

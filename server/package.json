@@ -1,0 +1,21 @@
+{
+  "name": "nexbe-poker-server",
+  "version": "1.0.0",
+  "description": "Nexbe online poker server",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js",
+    "tunnel": "node index.js --tunnel"
+  },
+  "dependencies": {
+    "cloudflared": "^0.7.3",
+    "express": "^4.18.2",
+    "localtunnel": "^2.0.2",
+    "socket.io": "^4.7.4",
+    "socket.io-client": "^4.8.3"
+  },
+  "allowScripts": {
+    "cloudflared@0.7.3": true
+  }
+}
